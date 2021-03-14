@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Dimensions,
@@ -7,7 +7,10 @@ import {
   ImageBackground,
   ScrollView,
   StyleSheet,
+  Text,
+  View,
 } from "react-native";
+import BottomSheet from "@gorhom/bottom-sheet";
 
 import Box from "../components/Box";
 import SearchIcon from "../components/icons/Search";
@@ -32,6 +35,12 @@ const width = Dimensions.get("window").width;
 
 function Home() {
   const randomRooms = useMemo(() => rooms(), []);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["7%", "83%"], []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   return (
     <Box variant="full" bg="background.default">
@@ -254,6 +263,14 @@ function Home() {
           </Box>
         </Box>
       </SafeAreaView>
+
+      {/* <BottomSheet
+        activeOffsetX={0}
+        activeOffsetY={0}
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      ></BottomSheet> */}
     </Box>
   );
 }
