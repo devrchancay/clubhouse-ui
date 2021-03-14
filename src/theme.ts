@@ -19,6 +19,12 @@ const defaultTheme = {
       social: "#5B75A6",
       time: "#6E664E",
     },
+    control: {
+      default: {
+        background: "#55AB67",
+        text: "#FFFFFF",
+      },
+    },
   },
   fonts: {
     bold: "Nunito-Bold",
@@ -31,7 +37,7 @@ const defaultTheme = {
   borders: [],
   borderWidths: [],
   borderStyles: [],
-  radii: [4, 8, 12, 16],
+  radii: [4, 8, 12, 16, 20, 24, 28],
   zIndices: [],
   shadows: [],
 };
