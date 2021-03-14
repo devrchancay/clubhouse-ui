@@ -56,13 +56,7 @@ function Home() {
             </Box>
           </Box>
         </Box>
-        <ScrollView
-          style={{
-            height: "100%",
-            marginTop: 20,
-            paddingHorizontal: 20,
-          }}
-        >
+        <ScrollView style={styles.mainScrollView}>
           <Box bg="background.tone" borderRadius={2} p={10}>
             {incomingEvents.map((event, key) => {
               const mb = key === incomingEvents.length - 1 ? 0 : 2;
@@ -258,6 +252,11 @@ function Home() {
 }
 
 const styles = StyleSheet.create({
+  mainScrollView: {
+    height: "100%",
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
   appAvatar: {
     width: 30,
     height: 30,
