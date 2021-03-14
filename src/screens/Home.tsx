@@ -24,7 +24,6 @@ import CommentIcon from "../components/icons/CommentIcon";
 import CommentGhost from "../components/icons/CommentGhost";
 import PlusIcon from "../components/icons/PlusIcon";
 import MenuIcon from "../components/icons/MenuIcon";
-import defaultTheme from "../theme";
 
 const avatar = require("../../assets/avatar/me.png");
 const gradient = require("../../assets/gradient.png");
@@ -85,10 +84,13 @@ function Home() {
                       </Typography>
                       <HomeIcon />
                     </Box>
+
                     <Typography
                       fontSize={2}
-                      fontFamily="bold"
+                      fontFamily="semi"
                       color="typo.secondary"
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
                     >
                       {event.title}
                     </Typography>
@@ -153,7 +155,7 @@ function Home() {
                       {room.users.slice(0, 5).map((user, index) => {
                         return (
                           <Box flexDirection="row" alignItems="center">
-                            <Typography fontFamily="bold" fontSize={17} mr={1}>
+                            <Typography fontFamily="semi" fontSize={17} mr={1}>
                               {user.name}
                             </Typography>
                             <RenderIf condition={index <= speakers}>
@@ -218,7 +220,11 @@ function Home() {
           </Box>
         </ScrollView>
         <Box position="absolute" width={width} height={180} bottom={0} left={0}>
-          <ImageBackground source={gradient} style={styles.bottomGradient}>
+          <ImageBackground
+            imageStyle={styles.bottomImageStyle}
+            source={gradient}
+            style={styles.bottomGradient}
+          >
             <Box flexDirection="row" justifyContent="center">
               <Box
                 borderRadius="50px"
@@ -227,6 +233,7 @@ function Home() {
                 py={2}
                 flexDirection="row"
                 alignItems="center"
+                zIndex={3}
               >
                 <Box mx={1}>
                   <PlusIcon />
@@ -276,9 +283,15 @@ const styles = StyleSheet.create({
     marginLeft: -10,
     borderRadius: 18,
   },
+  bottomImageStyle: {
+    resizeMode: "cover",
+    alignSelf: "flex-end",
+  },
   bottomGradient: {
     width,
     height: 180,
+    position: "absolute",
+    bottom: 0,
   },
 });
 

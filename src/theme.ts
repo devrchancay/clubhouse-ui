@@ -27,7 +27,9 @@ const defaultTheme = {
     },
   },
   fonts: {
+    regular: "Nunito-Regular",
     bold: "Nunito-Bold",
+    semi: "Nunito-SemiBold",
   },
   fontSizes: [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32],
   fontWeights: [],
