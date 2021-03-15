@@ -34,8 +34,8 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
       ref={ref}
       snapPoints={snapPoints}
       onChange={handleSheetChanges}
-      enableContentPanningGesture={true}
-      enableHandlePanningGesture={true}
+      enableContentPanningGesture={false}
+      enableHandlePanningGesture={false}
     >
       <RenderIf condition={roomState === "open"}>
         <Box px={16}>

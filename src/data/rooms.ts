@@ -23,14 +23,11 @@ export default function () {
   return Array.from({ length: numRoms })
     .fill({})
     .map(() => {
-      const id = Math.round(Math.random() * 80 + 1);
       const numUsers = Math.random() * 5 + 1;
       return {
         comunity: faker.lorem.text().substr(0, 12).toUpperCase(),
         title: faker.lorem.text().substr(0, 40),
         users: generateUser(numUsers),
-        firstUser: `https://randomuser.me/api/portraits/women/${id}.jpg`,
-        secondUser: `https://randomuser.me/api/portraits/men/${id + 1}.jpg`,
       };
     });
 }
