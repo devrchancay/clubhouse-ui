@@ -9,6 +9,7 @@ import * as Font from "expo-font";
 import defaultTheme from "./src/theme";
 import RootStack from "./src/RootStack";
 import { fonts } from "./src/constants";
+import RoomContextProvider from "./src/context/RoomContext";
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,9 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider theme={defaultTheme}>
         <NavigationContainer>
-          <RootStack />
+          <RoomContextProvider>
+            <RootStack />
+          </RoomContextProvider>
         </NavigationContainer>
       </ThemeProvider>
     </SafeAreaProvider>
