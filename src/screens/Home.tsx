@@ -1,5 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Dimensions,
@@ -7,8 +13,8 @@ import {
   ImageBackground,
   ScrollView,
   StyleSheet,
-  Text,
-  View,
+  TouchableOpacity,
+  Animated,
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 
@@ -27,20 +33,59 @@ import CommentIcon from "../components/icons/CommentIcon";
 import CommentGhost from "../components/icons/CommentGhost";
 import PlusIcon from "../components/icons/PlusIcon";
 import MenuIcon from "../components/icons/MenuIcon";
+import Handler from "../components/handler";
+import MicroIcon from "../components/icons/MicroIcon";
+import MoreIcon from "../components/icons/MoreIcon";
+import { Easing } from "react-native-reanimated";
 
 const avatar = require("../../assets/avatar/me.png");
 const gradient = require("../../assets/gradient.png");
 
-const width = Dimensions.get("window").width;
+const screen = Dimensions.get("window");
+
+const { width, height } = screen;
+
+const states = ["closed", "mini", "open"];
+
+const BoxAnimated = Animated.createAnimatedComponent(Box);
 
 function Home() {
+  const bottomCta = useRef(new Animated.Value(0)).current;
   const randomRooms = useMemo(() => rooms(), []);
+  const [roomState, setRoomState] = useState<
+    "closed" | "mini" | "open" | string
+  >("closed");
+  const [currentRoom, setCurrentRoom] = useState<any>(randomRooms[0]);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["7%", "83%"], []);
+  const snapPoints = useMemo(() => [0, "7%", "83%"], []);
 
   const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
+    if (index !== 2) {
+      setRoomState(states[index] ?? "closed");
+    }
   }, []);
+
+  useEffect(() => {
+    const value = ["mini", "open"].indexOf(roomState) !== -1 ? 1 : 0;
+
+    Animated.timing(bottomCta, {
+      toValue: value,
+      useNativeDriver: false,
+      duration: 300,
+      easing: Easing.linear,
+    }).start();
+  }, [roomState]);
+
+  function handleRoom(room: any) {
+    setCurrentRoom(room);
+    setRoomState("open");
+    bottomSheetRef.current?.expand();
+  }
+
+  const bottom = bottomCta.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 35],
+  });
 
   return (
     <Box variant="full" bg="background.default">
@@ -120,95 +165,105 @@ function Home() {
                   p={4}
                   boxShadow="0px 1px 1px #D0CCBF"
                 >
-                  <Box>
-                    <Box flexDirection="row" mb={0}>
-                      <Typography
-                        fontFamily="bold"
-                        color="typo.secondary"
-                        letterSpacing={2}
-                        fontSize={0}
-                        mr={1}
-                      >
-                        {room.comunity}
-                      </Typography>
-                      <HomeIcon />
-                    </Box>
-                    <Typography
-                      fontSize={4}
-                      color="typo.secondary"
-                      fontFamily="bold"
-                      lineHeight="22"
-                    >
-                      {room.title}
-                    </Typography>
-                  </Box>
-                  <Box flexDirection="row" mt={1}>
-                    <Box width="30%" py={2}>
-                      <Box
-                        flexDirection="row"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                        alignContent="flex-start"
-                      >
-                        <Image
-                          source={{ uri: room.firstUser }}
-                          style={styles.avatarFirstUser}
-                        />
-                        <Image
-                          source={{ uri: room.secondUser }}
-                          style={styles.avatarSecondUser}
-                        />
-                      </Box>
-                    </Box>
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleRoom(room);
+                    }}
+                  >
                     <Box>
-                      {room.users.slice(0, 5).map((user, index) => {
-                        return (
-                          <Box flexDirection="row" alignItems="center">
-                            <Typography fontFamily="semi" fontSize={17} mr={1}>
-                              {user.name}
-                            </Typography>
-                            <RenderIf condition={index <= speakers}>
-                              <CommentIcon />
-                            </RenderIf>
-                          </Box>
-                        );
-                      })}
-                      <Box flexDirection="row" mt={1}>
-                        <Box flexDirection="row" alignItems="center">
-                          <Typography
-                            color="typo.ghost"
-                            fontFamily="bold"
-                            fontSize={2}
-                          >
-                            {total}
-                          </Typography>
-                          <Box px={1}>
-                            <UserIcon />
-                          </Box>
-                        </Box>
+                      <Box flexDirection="row" mb={0}>
                         <Typography
-                          color="typo.ghost"
                           fontFamily="bold"
-                          fontSize={3}
-                          px={1}
+                          color="typo.secondary"
+                          letterSpacing={2}
+                          fontSize={0}
+                          mr={1}
                         >
-                          /
+                          {room.comunity}
                         </Typography>
-                        <Box flexDirection="row" alignItems="center">
+                        <HomeIcon />
+                      </Box>
+                      <Typography
+                        fontSize={4}
+                        color="typo.secondary"
+                        fontFamily="bold"
+                        lineHeight="22"
+                      >
+                        {room.title}
+                      </Typography>
+                    </Box>
+                    <Box flexDirection="row" mt={1}>
+                      <Box width="30%" py={2}>
+                        <Box
+                          flexDirection="row"
+                          justifyContent="flex-start"
+                          alignItems="flex-start"
+                          alignContent="flex-start"
+                        >
+                          <Image
+                            source={{ uri: room.firstUser }}
+                            style={styles.avatarFirstUser}
+                          />
+                          <Image
+                            source={{ uri: room.secondUser }}
+                            style={styles.avatarSecondUser}
+                          />
+                        </Box>
+                      </Box>
+                      <Box>
+                        {room.users.slice(0, 5).map((user, index) => {
+                          return (
+                            <Box flexDirection="row" alignItems="center">
+                              <Typography
+                                fontFamily="semi"
+                                fontSize={17}
+                                mr={1}
+                              >
+                                {user.name}
+                              </Typography>
+                              <RenderIf condition={index <= speakers}>
+                                <CommentIcon />
+                              </RenderIf>
+                            </Box>
+                          );
+                        })}
+                        <Box flexDirection="row" mt={1}>
+                          <Box flexDirection="row" alignItems="center">
+                            <Typography
+                              color="typo.ghost"
+                              fontFamily="bold"
+                              fontSize={2}
+                            >
+                              {total}
+                            </Typography>
+                            <Box px={1}>
+                              <UserIcon />
+                            </Box>
+                          </Box>
                           <Typography
                             color="typo.ghost"
                             fontFamily="bold"
-                            fontSize={2}
+                            fontSize={3}
+                            px={1}
                           >
-                            {speakers}
+                            /
                           </Typography>
-                          <Box px={1}>
-                            <CommentGhost />
+                          <Box flexDirection="row" alignItems="center">
+                            <Typography
+                              color="typo.ghost"
+                              fontFamily="bold"
+                              fontSize={2}
+                            >
+                              {speakers}
+                            </Typography>
+                            <Box px={1}>
+                              <CommentGhost />
+                            </Box>
                           </Box>
                         </Box>
                       </Box>
                     </Box>
-                  </Box>
+                  </TouchableOpacity>
                 </Box>
               );
             })}
@@ -228,7 +283,13 @@ function Home() {
             </Box>
           </Box>
         </ScrollView>
-        <Box position="absolute" width={width} height={180} bottom={0} left={0}>
+        <BoxAnimated
+          position="absolute"
+          width={width}
+          height={180}
+          style={{ bottom }}
+          left={0}
+        >
           <ImageBackground
             imageStyle={styles.bottomImageStyle}
             source={gradient}
@@ -261,16 +322,69 @@ function Home() {
           <Box right={30} position="absolute" top={2} zIndex={2}>
             <MenuIcon />
           </Box>
-        </Box>
+        </BoxAnimated>
       </SafeAreaView>
 
-      {/* <BottomSheet
-        activeOffsetX={0}
-        activeOffsetY={0}
+      <BottomSheet
+        handleComponent={Handler}
+        containerHeight={height}
         ref={bottomSheetRef}
         snapPoints={snapPoints}
         onChange={handleSheetChanges}
-      ></BottomSheet> */}
+      >
+        <RenderIf condition={roomState === "open"}>
+          <Box px={10}>
+            {/* header */}
+            <Box flexDirection="row" pr={2}>
+              <Box width="93%" pr={1}>
+                <Typography lineHeight="22" fontFamily="bold" fontSize={5}>
+                  {currentRoom.title}
+                </Typography>
+              </Box>
+              <Box mt={1} width="7%">
+                <MoreIcon />
+              </Box>
+            </Box>
+            {/* content */}
+            <Box flexDirection="row" flexWrap="wrap" py={20}>
+              {currentRoom.users.map((user, index) => {
+                return (
+                  <Box width="33%" alignItems="center" mb={20}>
+                    <Box position="relative">
+                      <Image
+                        source={{ uri: user.photo }}
+                        resizeMode="contain"
+                        style={{ width: 75, height: 75, borderRadius: 28 }}
+                      />
+                      <RenderIf condition={index !== 0}>
+                        <Box
+                          width={28}
+                          height={28}
+                          bg="white"
+                          boxShadow="0px 1px 2px rgba(0, 0, 0, 0.14)"
+                          borderRadius={14}
+                          position="absolute"
+                          bottom={-5}
+                          right={-3}
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <MicroIcon />
+                        </Box>
+                      </RenderIf>
+                    </Box>
+                    <Box my={2}>
+                      <Typography fontFamily="bold" textAlign="center">
+                        {user.shortName}
+                      </Typography>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
+        </RenderIf>
+      </BottomSheet>
     </Box>
   );
 }

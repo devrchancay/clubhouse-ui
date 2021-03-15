@@ -1,13 +1,20 @@
 import faker from "faker";
 
-const endpoint = "https://randomuser.me/api/";
-
 function generateUser(num: number) {
   return Array.from({ length: num })
     .fill({})
-    .map(() => ({
-      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-    }));
+    .map(() => {
+      const id = Math.round(Math.random() * 80 + 1);
+      const gender = id % 2 === 0 ? 1 : 0;
+      const name = faker.name.firstName(gender);
+      const lastName = faker.name.lastName();
+      const genderPhoto = gender === 0 ? "men" : "women";
+      return {
+        name: `${name} ${lastName}`,
+        shortName: name,
+        photo: `https://randomuser.me/api/portraits/${genderPhoto}/${id}.jpg`,
+      };
+    });
 }
 
 export default function () {
