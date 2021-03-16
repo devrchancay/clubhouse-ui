@@ -31,6 +31,7 @@ import MenuIcon from "../components/icons/MenuIcon";
 import { Easing } from "react-native-reanimated";
 import Room from "../components/Room";
 import useRoomContext from "../hooks/useRoomContext";
+import DownIcon from "../components/icons/DownIcon";
 
 const avatar = require("../../assets/avatar/me.png");
 const gradient = require("../../assets/gradient.png");
@@ -102,11 +103,19 @@ function Home() {
               </RenderIf>
               <RenderIf condition={context.roomState === "open"}>
                 <Box pl={2} mt={3}>
-                  <TouchableOpacity onPress={minimizeRoom}>
-                    <Typography fontFamily="regular" fontSize={3}>
+                  <Box
+                    as={TouchableOpacity}
+                    flexDirection="row"
+                    alignItems="center"
+                    onPress={minimizeRoom}
+                  >
+                    <Box mr={1}>
+                      <DownIcon />
+                    </Box>
+                    <Typography fontFamily="semi" fontSize={3}>
                       All rooms
                     </Typography>
-                  </TouchableOpacity>
+                  </Box>
                 </Box>
               </RenderIf>
             </Box>

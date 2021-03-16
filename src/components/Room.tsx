@@ -1,6 +1,7 @@
 import BottomSheet from "@gorhom/bottom-sheet";
 import React, { useCallback, useRef, useState } from "react";
 import { useWindowDimensions, Image } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import useRoomContext from "../hooks/useRoomContext";
 import Box from "./Box";
 import Handler from "./handler";
@@ -27,6 +28,8 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
     }
   }, []);
 
+  const isOpen = roomState === "open";
+
   return (
     <BottomSheet
       handleComponent={Handler}
@@ -37,69 +40,75 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
       enableContentPanningGesture={false}
       enableHandlePanningGesture={false}
     >
-      <RenderIf condition={roomState === "open"}>
-        <Box px={16}>
-          {/* header */}
-          <Box flexDirection="row" pr={2}>
-            <Box width="93%" pr={1}>
-              <Box flexDirection="row" mb={1}>
-                <Typography
-                  fontFamily="bold"
-                  color="typo.secondary"
-                  letterSpacing={2}
-                  fontSize={0}
-                  mr={1}
-                >
-                  {currentRoom.comunity}
-                </Typography>
-                <HomeIcon />
-              </Box>
-              <Typography lineHeight="22" fontFamily="bold" fontSize={5}>
-                {currentRoom.title}
-              </Typography>
-            </Box>
-            <Box mt={1} width="7%">
-              <MoreIcon />
-            </Box>
-          </Box>
-          {/* content */}
-          <Box flexDirection="row" flexWrap="wrap" py={20}>
-            {currentRoom?.users?.map((user, index) => {
-              return (
-                <Box width="33%" alignItems="center" mb={20}>
-                  <Box position="relative">
-                    <Image
-                      source={{ uri: user.photo }}
-                      resizeMode="contain"
-                      style={{ width: 75, height: 75, borderRadius: 28 }}
-                    />
-                    <RenderIf condition={index !== 0}>
-                      <Box
-                        width={28}
-                        height={28}
-                        bg="white"
-                        boxShadow="0px 1px 2px rgba(0, 0, 0, 0.14)"
-                        borderRadius={14}
-                        position="absolute"
-                        bottom={-5}
-                        right={-3}
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <MicroIcon />
-                      </Box>
-                    </RenderIf>
-                  </Box>
-                  <Box my={2}>
-                    <Typography fontFamily="bold" textAlign="center">
-                      {user.shortName}
+      <RenderIf condition={isOpen}>
+        <FlatList
+          keyExtractor={(item) => item.name}
+          ListHeaderComponent={() => {
+            return (
+              <Box flexDirection="row" pr={2} mb={20}>
+                <Box pr={1} width="96%">
+                  <Box flexDirection="row" mb={1}>
+                    <Typography
+                      fontFamily="bold"
+                      color="typo.secondary"
+                      letterSpacing={2}
+                      fontSize={0}
+                      mr={1}
+                    >
+                      {currentRoom.comunity}
                     </Typography>
+                    <HomeIcon />
+                  </Box>
+                  <Typography lineHeight="22" fontFamily="bold" fontSize={5}>
+                    {currentRoom.title}
+                  </Typography>
+                </Box>
+                <Box mt={2}>
+                  <MoreIcon />
+                </Box>
+              </Box>
+            );
+          }}
+          data={currentRoom?.users}
+          numColumns={3}
+          contentContainerStyle={{
+            justifyContent: "center",
+            marginHorizontal: 18,
+          }}
+          renderItem={({ item }) => {
+            return (
+              <Box width="33%" alignItems="center" mb={20}>
+                <Box position="relative">
+                  <Image
+                    source={{ uri: item.photo }}
+                    resizeMode="contain"
+                    style={{ width: 75, height: 75, borderRadius: 32 }}
+                  />
+
+                  <Box
+                    width={28}
+                    height={28}
+                    bg="white"
+                    boxShadow="0px 1px 2px rgba(0, 0, 0, 0.14)"
+                    borderRadius={14}
+                    position="absolute"
+                    bottom={-5}
+                    right={-3}
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <MicroIcon />
                   </Box>
                 </Box>
-              );
-            })}
-          </Box>
-        </Box>
+                <Box my={2}>
+                  <Typography fontFamily="bold" textAlign="center">
+                    {item.shortName}
+                  </Typography>
+                </Box>
+              </Box>
+            );
+          }}
+        />
       </RenderIf>
     </BottomSheet>
   );
