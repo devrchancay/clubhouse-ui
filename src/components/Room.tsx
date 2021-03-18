@@ -1,12 +1,12 @@
 import BottomSheet from "@gorhom/bottom-sheet";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback } from "react";
 import { useWindowDimensions, Image } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import useRoomContext from "../hooks/useRoomContext";
 import Box from "./Box";
-import Handler from "./handler";
 import HomeIcon from "./icons/HomeIcon";
 import MicroIcon from "./icons/MicroIcon";
+import ModeratorIcon from "./icons/ModeratorIcon";
 import MoreIcon from "./icons/MoreIcon";
 import RenderIf from "./RenderIf";
 import Typography from "./Typography";
@@ -32,7 +32,7 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
 
   return (
     <BottomSheet
-      handleComponent={Handler}
+      handleComponent={() => null}
       containerHeight={height}
       ref={ref}
       snapPoints={snapPoints}
@@ -70,6 +70,7 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
             );
           }}
           data={currentRoom?.users}
+          style={{ paddingVertical: 10 }}
           numColumns={3}
           contentContainerStyle={{
             justifyContent: "center",
@@ -100,10 +101,15 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
                     <MicroIcon />
                   </Box>
                 </Box>
-                <Box my={2}>
-                  <Typography fontFamily="bold" textAlign="center">
-                    {item.shortName}
-                  </Typography>
+                <Box my={2} flexDirection="row" alignItems="center">
+                  <RenderIf condition={item.isModerator}>
+                    <ModeratorIcon />
+                  </RenderIf>
+                  <Box ml={1}>
+                    <Typography fontFamily="bold" textAlign="center">
+                      {item.shortName}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             );
