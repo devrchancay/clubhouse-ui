@@ -24,6 +24,11 @@ const defaultTheme = {
         background: "#55AB67",
         text: "#FFFFFF",
       },
+      ghost: {
+        background: "#F2F2F2",
+        textPrimary: "#DA615C",
+        textSecondary: "#333333",
+      },
     },
   },
   fonts: {

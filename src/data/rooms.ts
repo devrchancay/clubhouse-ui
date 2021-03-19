@@ -22,6 +22,7 @@ function generateUser(num: number, index: number) {
         photo: `https://randomuser.me/api/portraits/${genderPhoto}/${id}.jpg`,
         index,
         isModerator: !!isModerator,
+        isSpeaker: index === 0,
       };
     });
 }
@@ -36,12 +37,30 @@ export default function () {
       const numFollowers = random(3, 8);
       const numOthersUsers = random(10, 20);
 
+      const users = [
+        numSpeakers,
+        numFollowers,
+        numOthersUsers,
+      ].map((num, index) => generateUser(num, index));
+
       return {
         comunity: faker.lorem.text().substr(0, 12).toUpperCase(),
         title: faker.lorem.text().substr(0, 40),
-        users: [numSpeakers, numFollowers, numOthersUsers]
-          .map((num, index) => generateUser(num, index))
-          .flat(),
+        users: users.flat(),
+        userByRole: [
+          {
+            title: "",
+            data: [users[0]],
+          },
+          {
+            title: "Followed by the speakers",
+            data: [users[1]],
+          },
+          {
+            title: "Others in the room",
+            data: [users[2]],
+          },
+        ],
       };
     });
 }
