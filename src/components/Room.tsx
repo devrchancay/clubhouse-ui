@@ -9,17 +9,14 @@ import {
 
 import useRoomContext from "../hooks/useRoomContext";
 import Box from "./Box";
-import HandIcon from "./icons/HandIcon";
 import HomeIcon from "./icons/HomeIcon";
 import MicroIcon from "./icons/MicroIcon";
 import ModeratorIcon from "./icons/ModeratorIcon";
 import MoreIcon from "./icons/MoreIcon";
-
-import PlusPlusIcon from "./icons/PlusPlusIcon";
 import RenderIf from "./RenderIf";
 import Typography from "./Typography";
 
-const snapPoints = [0, "7%", "83%"];
+const snapPoints = [0, 0, "83%"];
 const states = ["closed", "mini", "open"];
 
 type Ref = BottomSheet;
@@ -27,7 +24,7 @@ type Ref = BottomSheet;
 interface Props {}
 
 const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
-  const { currentRoom, roomState, setRoomState } = useRoomContext();
+  const { currentRoom, setRoomState } = useRoomContext();
   const { height } = useWindowDimensions();
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -35,8 +32,6 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
       setRoomState(states[index] ?? "closed");
     }
   }, []);
-
-  const isOpen = roomState === "open";
 
   return (
     <BottomSheet
@@ -48,7 +43,7 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
       enableContentPanningGesture={false}
       enableHandlePanningGesture={false}
     >
-      <RenderIf condition={isOpen}>
+      <Box position="relative">
         <SectionList
           stickySectionHeadersEnabled={false}
           style={{
@@ -66,6 +61,9 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
               </Box>
             </RenderIf>
           )}
+          contentContainerStyle={{
+            paddingBottom: 40,
+          }}
           renderItem={(props) => {
             const items = props.item;
 
@@ -148,67 +146,6 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
             </Box>
           )}
         />
-      </RenderIf>
-      <Box
-        boxShadow={!isOpen ? "0px 1px 2px rgba(0, 0, 0, 0.14)" : ""}
-        position="absolute"
-        bg="white"
-        top={isOpen ? "auto" : 0}
-        bottom={0}
-        width="100%"
-        borderTopLeftRadius={12}
-        borderTopRightRadius={12}
-        py={18}
-      >
-        <Box flexDirection="row" px={16} justifyContent="space-between">
-          <Box
-            flexDirection="row"
-            alignContent="center"
-            justifyContent="center"
-          >
-            <Box
-              bg="control.ghost.background"
-              width={160}
-              borderRadius={3}
-              height={42}
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Typography
-                textAlign="center"
-                fontFamily="bold"
-                color="control.ghost.textPrimary"
-                fontSize={3}
-              >
-                ✌️ Leave quietly
-              </Typography>
-            </Box>
-          </Box>
-          <Box flexDirection="row">
-            <Box
-              width={42}
-              height={42}
-              bg="control.ghost.background"
-              borderRadius={20}
-              mr={2}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <PlusPlusIcon />
-            </Box>
-            <Box
-              width={42}
-              height={42}
-              bg="control.ghost.background"
-              borderRadius={20}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <HandIcon />
-            </Box>
-          </Box>
-        </Box>
       </Box>
     </BottomSheet>
   );

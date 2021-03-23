@@ -32,6 +32,7 @@ import { Easing } from "react-native-reanimated";
 import Room from "../components/Room";
 import useRoomContext from "../hooks/useRoomContext";
 import DownIcon from "../components/icons/DownIcon";
+import RoomActionBar from "../components/RoomActionBar";
 
 const avatar = require("../../assets/avatar/me.png");
 const gradient = require("../../assets/gradient.png");
@@ -359,6 +360,9 @@ function Home() {
       </SafeAreaView>
 
       <Room ref={bottomSheetRef} />
+      <RenderIf condition={context.roomState !== "closed"}>
+        <RoomActionBar />
+      </RenderIf>
     </Box>
   );
 }
