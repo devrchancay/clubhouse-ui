@@ -82,7 +82,7 @@ function Home() {
 
   const bottom = bottomCta.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 35],
+    outputRange: [0, 60],
   });
 
   function minimizeRoom() {
@@ -361,7 +361,11 @@ function Home() {
 
       <Room ref={bottomSheetRef} />
       <RenderIf condition={context.roomState !== "closed"}>
-        <RoomActionBar />
+        <RoomActionBar
+          onOpen={() => {
+            bottomSheetRef.current?.expand();
+          }}
+        />
       </RenderIf>
     </Box>
   );
