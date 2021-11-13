@@ -1,14 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Dimensions,
   Image,
   ImageBackground,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Animated,
   FlatList,
 } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
@@ -28,7 +26,12 @@ import CommentIcon from "../components/icons/CommentIcon";
 import CommentGhost from "../components/icons/CommentGhost";
 import PlusIcon from "../components/icons/PlusIcon";
 import MenuIcon from "../components/icons/MenuIcon";
-import { Easing } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import Room from "../components/Room";
 import useRoomContext from "../hooks/useRoomContext";
 import DownIcon from "../components/icons/DownIcon";
@@ -41,15 +44,20 @@ const screen = Dimensions.get("window");
 
 const { width } = screen;
 
-const BoxAnimated = Animated.createAnimatedComponent(Box);
-
 const randomRooms = dataRooms();
 
 function Home() {
-  const bottomCta = useRef(new Animated.Value(0)).current;
   const [rooms, setRooms] = useState(randomRooms);
   const [refreshing, setRefreshing] = useState(false);
   const context = useRoomContext();
+  const bottom = useSharedValue(0);
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    bottom: withTiming(bottom.value, {
+      duration: 300,
+      easing: Easing.linear,
+    }),
+  }));
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -64,26 +72,20 @@ function Home() {
   }
 
   useEffect(() => {
-    const value = ["mini", "open"].indexOf(context.roomState) !== -1 ? 1 : 0;
-
-    Animated.timing(bottomCta, {
-      toValue: value,
-      useNativeDriver: false,
-      duration: 300,
-      easing: Easing.linear,
-    }).start();
+    if (context.roomState === "mini" || context.roomState === "open") {
+      bottom.value = 60;
+    } else {
+      bottom.value = 0;
+    }
   }, [context.roomState]);
 
   function handleRoom(room: any) {
     context.setCurrentRoom(room);
-    context.setRoomState("open");
-    bottomSheetRef.current?.expand();
+    setTimeout(() => {
+      context.setRoomState("open");
+      bottomSheetRef.current?.expand();
+    }, 100);
   }
-
-  const bottom = bottomCta.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 60],
-  });
 
   function minimizeRoom() {
     context.setRoomState("mini");
@@ -318,11 +320,12 @@ function Home() {
           }}
         />
 
-        <BoxAnimated
+        <Box
+          as={Animated.View}
           position="absolute"
           width={width}
           height={180}
-          style={{ bottom }}
+          style={animatedStyles}
           left={0}
         >
           <Box flexDirection="row" justifyContent="center">
@@ -356,12 +359,15 @@ function Home() {
           <Box right={30} position="absolute" top={2} zIndex={2}>
             <MenuIcon />
           </Box>
-        </BoxAnimated>
+        </Box>
       </SafeAreaView>
 
       <Room ref={bottomSheetRef} />
       <RenderIf condition={context.roomState !== "closed"}>
         <RoomActionBar
+          onClose={() => {
+            bottomSheetRef.current?.collapse();
+          }}
           onOpen={() => {
             bottomSheetRef.current?.expand();
           }}

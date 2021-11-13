@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect } from "react";
-import { Image, TouchableWithoutFeedback } from "react-native";
+import {
+  Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -15,9 +19,10 @@ import Typography from "./Typography";
 
 interface Props {
   onOpen: () => void;
+  onClose: () => void;
 }
 
-function RoomActionBar({ onOpen }: Props) {
+function RoomActionBar({ onOpen, onClose }: Props) {
   const { roomState, currentRoom, setRoomState } = useRoomContext();
   const width = useSharedValue(42);
 
@@ -124,15 +129,22 @@ function RoomActionBar({ onOpen }: Props) {
               alignItems="center"
               justifyContent="center"
             >
-              <Typography
-                textAlign="center"
-                fontFamily="bold"
-                color="control.ghost.textPrimary"
-                fontSize={3}
+              <TouchableOpacity
+                onPress={() => {
+                  onClose();
+                  setRoomState("closed");
+                }}
               >
-                ✌️
-                <RenderIf condition={isOpen}>Leave quietly</RenderIf>
-              </Typography>
+                <Typography
+                  textAlign="center"
+                  fontFamily="bold"
+                  color="control.ghost.textPrimary"
+                  fontSize={3}
+                >
+                  ✌️
+                  <RenderIf condition={isOpen}>Leave quietly</RenderIf>
+                </Typography>
+              </TouchableOpacity>
             </Box>
           </Box>
 

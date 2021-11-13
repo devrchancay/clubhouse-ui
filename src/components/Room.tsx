@@ -28,7 +28,8 @@ const Room: React.ForwardRefRenderFunction<Ref, Props> = (props, ref) => {
   const { height } = useWindowDimensions();
 
   const handleSheetChanges = useCallback((index: number) => {
-    if (index !== 2) {
+    console.log({ index });
+    if ([1, 2].indexOf(index) == -1) {
       setRoomState(states[index] ?? "closed");
     }
   }, []);
